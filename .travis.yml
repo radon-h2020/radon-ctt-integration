@@ -25,7 +25,7 @@ script:
   - wget "${EXPORT_URL}" --header="Accept: application/xml" -O "${EXPORT_FILE}"
   - mkdir "${EXPORT_EXTRACT_FOLDER}"
   - unzip "${EXPORT_FILE}" -d "./${EXPORT_EXTRACT_FOLDER}"
-  - ENTRY_DEFINITION=`grep "^Entry-Definitions:" TOSCA-Metadata/TOSCA.meta | awk '{print $2}'`
+  - ENTRY_DEFINITION=`grep "^Entry-Definitions:" "${EXPORT_EXTRACT_FOLDER}TOSCA-Metadata/TOSCA.meta" | awk '{print $2}'`
   - cd "${EXPORT_EXTRACT_FOLDER}/_definitions/"
   - opera deploy "${ENTRY_DEFINITION}"
   - curl -o /dev/null -s -w "%{http_code}\n" "http://localhost" && exit 0 || exit 1
