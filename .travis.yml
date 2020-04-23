@@ -32,5 +32,5 @@ script:
   - opera deploy "${ENTRY_DEFINITION}"
   - sleep 60
   - export DEPLOYMENT_HTTP=`curl -o /dev/null -s -w "%{http_code}\n" "http://localhost"`
-  - [[ "$DEPLOYMENT_HTTP" == "200" ]] && exit 0 || exit 1
+  - "[[ \"$DEPLOYMENT_HTTP\" == \"200\" ]] && exit 0 || exit 1"
   - set +e
