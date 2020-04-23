@@ -25,7 +25,7 @@ install:
 script:
   - "curl -H 'Accept: application/xml' -o \"${EXPORT_FILE}\" \"${EXPORT_URL}\""
   - unzip "${EXPORT_FILE}" -d "${EXPORT_EXTRACT_FOLDER}"
-  - ENTRY_DEFINITION=`grep "^Entry-Definitions:" "${EXPORT_EXTRACT_FOLDER}TOSCA-Metadata/TOSCA.meta" | awk '{print $2}'`
+  - env ENTRY_DEFINITION=`grep "^Entry-Definitions:" "${EXPORT_EXTRACT_FOLDER}TOSCA-Metadata/TOSCA.meta" | awk '{print $2}'`
   - cd "${EXPORT_EXTRACT_FOLDER}/_definitions/"
   - opera deploy "${ENTRY_DEFINITION}"
   - curl -o /dev/null -s -w "%{http_code}\n" "http://localhost" && exit 0 || exit 1
