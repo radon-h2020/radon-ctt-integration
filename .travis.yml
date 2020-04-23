@@ -10,7 +10,7 @@ env:
     - PARTICLES_URL="https://github.com/radon-h2020/radon-particles.git"
     - PARTICLES_BRANCH="master"
     - PARTICLES_DIR="/tmp/radon-particles"
-    - EXPORT_URL="http://localhost:${GMT_HTTP_PORT}/winery/servicetemplates/radon.blueprints/SockShop/?yaml&csar"
+    - EXPORT_URL="http://127.0.0.1:${GMT_HTTP_PORT}/winery/servicetemplates/radon.blueprints/SockShop/?yaml&csar"
     - EXPORT_FILE="export.csar"
     - EXPORT_EXTRACT_FOLDER="export"
 
