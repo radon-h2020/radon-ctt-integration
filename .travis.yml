@@ -16,6 +16,7 @@ env:
 
 before_install:
   - git clone --single-branch --branch "${PARTICLES_BRANCH}" "${PARTICLES_URL}" "${PARTICLES_DIR}"
+  - chmod -R a+rwx "${PARTICLES_DIR}"
   - docker-compose up -d
 
 install:
@@ -23,7 +24,7 @@ install:
 
 script:
   - "curl -H 'Accept: application/xml' -o \"${EXPORT_FILE}\" \"${EXPORT_URL}\""
-  - "unzip \"${EXPORT_FILE}\" -d \"./${EXPORT_EXTRACT_FOLDER}\""
+  - unzip "${EXPORT_FILE}" -d "./${EXPORT_EXTRACT_FOLDER}"
   - ENTRY_DEFINITION=`grep "^Entry-Definitions:" "${EXPORT_EXTRACT_FOLDER}TOSCA-Metadata/TOSCA.meta" | awk '{print $2}'`
   - cd "${EXPORT_EXTRACT_FOLDER}/_definitions/"
   - opera deploy "${ENTRY_DEFINITION}"
