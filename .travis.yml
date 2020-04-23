@@ -10,7 +10,7 @@ env:
     - PARTICLES_URL="https://github.com/radon-h2020/radon-particles.git"
     - PARTICLES_BRANCH="master"
     - PARTICLES_DIR="/tmp/radon-particles"
-    - EXPORT_URL="\"http://127.0.0.1:${GMT_HTTP_PORT}/winery/servicetemplates/radon.blueprints/SockShop/?yaml&csar\""
+    - EXPORT_URL="http://127.0.0.1:${GMT_HTTP_PORT}/winery/servicetemplates/radon.blueprints/SockShop/?yaml&csar"
     - EXPORT_FILE="${HOME}/export.csar"
     - EXPORT_EXTRACT_FOLDER="${HOME}/export"
 
@@ -24,7 +24,7 @@ install:
 script:
   - echo "${EXPORT_URL}"
   - echo "${EXPORT_FILE}"
-  - curl -H="Accept: application/xml" -o "${EXPORT_FILE}" "${EXPORT_URL}"
+  - curl -H 'Accept: application/xml' -o "${EXPORT_FILE}" "${EXPORT_URL}"
   - mkdir "${EXPORT_EXTRACT_FOLDER}"
   - unzip "${EXPORT_FILE}" -d "./${EXPORT_EXTRACT_FOLDER}"
   - ENTRY_DEFINITION=`grep "^Entry-Definitions:" "${EXPORT_EXTRACT_FOLDER}TOSCA-Metadata/TOSCA.meta" | awk '{print $2}'`
