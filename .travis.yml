@@ -27,5 +27,8 @@ script:
   - unzip "${EXPORT_FILE}" -d "${EXPORT_EXTRACT_FOLDER}"
   - env ENTRY_DEFINITION=`grep "^Entry-Definitions:" "${EXPORT_EXTRACT_FOLDER}/TOSCA-Metadata/TOSCA.meta" | awk '{print $2}' | cut -d'/' -f2`
   - cd "${EXPORT_EXTRACT_FOLDER}/_definitions"
+  - echo "${ENTRY_DEFINITION}"
+  - pwd
+  - ls -al
   - opera deploy "${ENTRY_DEFINITION}"
   - curl -o /dev/null -s -w "%{http_code}\n" "http://localhost" && exit 0 || exit 1
