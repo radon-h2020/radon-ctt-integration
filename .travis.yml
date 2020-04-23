@@ -23,12 +23,14 @@ install:
   - pip install -r requirements.txt
 
 script:
+  - set -e
   - "curl -H 'Accept: application/xml' -o \"${EXPORT_FILE}\" \"${EXPORT_URL}\""
   - unzip "${EXPORT_FILE}" -d "${EXPORT_EXTRACT_FOLDER}"
   - export ENTRY_DEFINITION=`grep "^Entry-Definitions:" "${EXPORT_EXTRACT_FOLDER}/TOSCA-Metadata/TOSCA.meta" | awk '{print $2}' | cut -d'/' -f2`
   - cd "${EXPORT_EXTRACT_FOLDER}/_definitions"
   - echo "${ENTRY_DEFINITION}"
-  - pwd
-  - ls -al
   - opera deploy "${ENTRY_DEFINITION}"
-  - curl -o /dev/null -s -w "%{http_code}\n" "http://localhost" && exit 0 || exit 1
+  - sleep 60
+  - export DEPLOYMENT_HTTP=`curl -o /dev/null -s -w "%{http_code}\n" "http://localhost"`
+  - [[ "$DEPLOYMENT_HTTP" == "200" ]] && exit 0 || exit 1
+  - set +e
