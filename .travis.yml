@@ -22,6 +22,8 @@ install:
   - pip install -r requirements.txt
 
 script:
+  - echo "${EXPORT_URL}"
+  - echo "${EXPORT_FILE}"
   - wget "${EXPORT_URL}" --header="Accept: application/xml" -O "${EXPORT_FILE}"
   - mkdir "${EXPORT_EXTRACT_FOLDER}"
   - unzip "${EXPORT_FILE}" -d "./${EXPORT_EXTRACT_FOLDER}"
