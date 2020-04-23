@@ -26,7 +26,6 @@ script:
   - echo "${EXPORT_FILE}"
   - curl -v "http://127.0.0.1:18080"
   - "curl -H 'Accept: application/xml' -o \"${EXPORT_FILE}\" \"${EXPORT_URL}\""
-  - mkdir "${EXPORT_EXTRACT_FOLDER}"
   - unzip "${EXPORT_FILE}" -d "./${EXPORT_EXTRACT_FOLDER}"
   - ENTRY_DEFINITION=`grep "^Entry-Definitions:" "${EXPORT_EXTRACT_FOLDER}TOSCA-Metadata/TOSCA.meta" | awk '{print $2}'`
   - cd "${EXPORT_EXTRACT_FOLDER}/_definitions/"
