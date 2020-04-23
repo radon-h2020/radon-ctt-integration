@@ -24,6 +24,7 @@ install:
 script:
   - echo "${EXPORT_URL}"
   - echo "${EXPORT_FILE}"
+  - curl -v "http://localhost:18080"
   - curl -H 'Accept: application/xml' -o "${EXPORT_FILE}" "${EXPORT_URL}"
   - mkdir "${EXPORT_EXTRACT_FOLDER}"
   - unzip "${EXPORT_FILE}" -d "./${EXPORT_EXTRACT_FOLDER}"
