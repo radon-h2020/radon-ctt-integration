@@ -11,8 +11,8 @@ env:
     - PARTICLES_BRANCH="master"
     - PARTICLES_DIR="/tmp/radon-particles"
     - EXPORT_URL="\"http://127.0.0.1:${GMT_HTTP_PORT}/winery/servicetemplates/radon.blueprints/SockShop/?yaml&csar\""
-    - EXPORT_FILE="export.csar"
-    - EXPORT_EXTRACT_FOLDER="export"
+    - EXPORT_FILE="${HOME}/export.csar"
+    - EXPORT_EXTRACT_FOLDER="${HOME}/export"
 
 before_install:
   - git clone --single-branch --branch "${PARTICLES_BRANCH}" "${PARTICLES_URL}" "${PARTICLES_DIR}"
@@ -24,7 +24,7 @@ install:
 script:
   - echo "${EXPORT_URL}"
   - echo "${EXPORT_FILE}"
-  - wget "${EXPORT_URL}" --header="Accept: application/xml" -O "${EXPORT_FILE}"
+  - curl -H="Accept: application/xml" -o "${EXPORT_FILE}" "${EXPORT_URL}"
   - mkdir "${EXPORT_EXTRACT_FOLDER}"
   - unzip "${EXPORT_FILE}" -d "./${EXPORT_EXTRACT_FOLDER}"
   - ENTRY_DEFINITION=`grep "^Entry-Definitions:" "${EXPORT_EXTRACT_FOLDER}TOSCA-Metadata/TOSCA.meta" | awk '{print $2}'`
