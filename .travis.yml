@@ -1,0 +1,31 @@
+language: python
+
+services: 
+  - docker
+
+env:
+  global:
+    - GMT_DOCKER_COMPOSE_URL="https://github.com/radon-h2020/radon-gmt/blob/project/radon/docker-compose.yml"
+    - GMT_HTTP_PORT="18080"
+    - PARTICLES_URL="https://github.com/radon-h2020/radon-particles.git"
+    - ARTICLES_BRANCH="master"
+    - PARTICLES_DIR="/tmp/radon-particles"
+    - EXPORT_URL="http://localhost:${GMT_HTTP_PORT}/winery/servicetemplates/radon.blueprints/SockShop/?yaml&csar"
+    - EXPORT_FILE="export.csar"
+    - EXPORT_EXTRACT_FOLDER="export"
+
+before_install:
+  - git clone --single-branch --branch "${PARTICLES_BRANCH}" "${PARTICLES_URL}" "${PARTICLES_DIR}"
+  - docker-compose up -d
+
+install:
+  - pip install -r requirements.txt
+
+script:
+  - wget "${EXPORT_URL}" --header="Accept: application/xml" -O "${EXPORT_FILE}"
+  - mkdir "${EXPORT_EXTRACT_FOLDER}"
+  - unzip "${EXPORT_FILE}" -d "./${EXPORT_EXTRACT_FOLDER}"
+  - ENTRY_DEFINITION=`grep "^Entry-Definitions:" TOSCA-Metadata/TOSCA.meta | awk '{print $2}'`
+  - cd "${EXPORT_EXTRACT_FOLDER}/_definitions/"
+  - opera deploy "${ENTRY_DEFINITION}"
+  - curl -o /dev/null -s -w "%{http_code}\n" "http://localhost" && exit 0 || exit 1
