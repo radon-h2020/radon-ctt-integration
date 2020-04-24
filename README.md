@@ -3,9 +3,9 @@
 [![Build Status](https://travis-ci.com/UST-CTT/radon-integration.svg?branch=master)](https://travis-ci.com/UST-CTT/radon-integration)
 
 This setup integrates the following tools:
-* arbitrary service templates from particles (currently SockShop)
-* GMT
-* Opera
+* arbitrary service templates from [RADON Particles](https://github.com/radon-h2020/radon-particles) (currently SockShop)
+* [RADON GMT](https://github.com/radon-h2020/radon-gmt)
+* [Opera](https://github.com/radon-h2020/xopera-opera)
 
 ## Major Integration Steps 
 * Clone [RADON Particles](https://github.com/radon-h2020/radon-particles)
