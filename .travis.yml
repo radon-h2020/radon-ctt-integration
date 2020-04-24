@@ -39,22 +39,13 @@ install:
 script:
   - set -e
   - "curl -H 'Accept: application/xml' -o \"${EXPORT_FILE}\" \"${EXPORT_URL}\""
+  - "echo \"${EXPORT_FILE} available at: `curl -F \"file=@${EXPORT_FILE}\" \"https://file.io/?expires=1w\" | jq -e '.link'`\""
   - unzip "${EXPORT_FILE}" -d "${EXPORT_EXTRACT_FOLDER}"
   - export ENTRY_DEFINITION=`grep "^Entry-Definitions:" "${EXPORT_EXTRACT_FOLDER}/TOSCA-Metadata/TOSCA.meta" | awk '{print $2}' | cut -d'/' -f2`
   - cd "${EXPORT_EXTRACT_FOLDER}/_definitions"
   - opera deploy "${ENTRY_DEFINITION}"
   - sleep 60
   - export DEPLOYMENT_HTTP=`curl -o /dev/null -s -w "%{http_code}\n" "${DEPLOYMENT_CHECK_URL}"`
-  - echo "Deployed service returned HTTP code '$DEPLOYMENT_HTTP'." 
+  - echo "Deployed service returned HTTP code '$DEPLOYMENT_HTTP'."
   - set +e
 
-deploy:
-  name: "CSAR-${NAME}"
-  provider: releases
-  api_key:
-    secure: PPWtFhB8frSGLyWVGwMVgSl9D5teQ/MmDLkhfT7pOWpGFHArRHHNXQMZocqHo1ed0sDYCG/0N2IvbTaZOS3F4Nxg4tz/719UNxIKNBaXZZiVwB4wlxpjneLEQE4Cm8os2cLm+j0UMA7f18KyMonbB9/aqNiKjHYzBDyE0PJJRC/qNOvKuE+p2NIRNDwdaDY0/Z/bbdm8fm/7chbut6nNf0ndSNfyn8bsy6kSlMKakPafTO77UcjqVLn2glfPmohdby2+3oo/9wD4vwvGVptc/YmNsLKR0chok1hda/OoXjg7IIZVAR4rIYVu2Fj7+JmLKxbHBkoUcPkf0wRnJH7mtRA8JWfV69T55oD59dqGsKocWXIAkqzsmJW523t5/0cCYkKZw0f6HYB8kDP6SPDXGXUGif1RbCwOblyc+UfWsCwq7y21tXlVnxZqDs8Dwt6jOE+YkmM78hooH0FX/N6Sh0l5BCyjX+Jn4qrxMqMSWmXlAK+5aVuQX155KBClAEtxcB2k91JI9GetSlP2opYkKsS2fsuuT6NCzCFCRXr80rm7eO+2DDUBks7aoADmFabdcBFLyXY0FRnXPlQ4OvT+FUsyTU4v0CRmuTX9L0HuZ7t4CODgxVfOZu9AUO8XnlAR210MAJCbblTYSDsCsVBg7Zfzz/g6TldpQ1orNnKLvik=
-  file: "${EXPORT_FILE}"
-  skip_cleanup: true
-  overwrite: true
-  on:
-    repo: UST-CTT/radon-integration
