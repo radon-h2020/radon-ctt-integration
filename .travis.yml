@@ -46,9 +46,9 @@ script:
   - "curl -H 'Accept: application/xml' -o \"${EXPORT_FILE}\" \"${EXPORT_URL}\""
   - "echo \"${EXPORT_FILE} available at: `curl -F \"file=@${EXPORT_FILE}\" \"https://file.io/?expires=1w\" | jq -e '.link'`\""
   - unzip "${EXPORT_FILE}" -d "${EXPORT_EXTRACT_FOLDER}"
-  - export ENTRY_DEFINITION=`grep "^Entry-Definitions:" "${EXPORT_EXTRACT_FOLDER}/TOSCA-Metadata/TOSCA.meta" | awk '{print $2}' | cut -d'/' -f2`
-  - cd "${EXPORT_EXTRACT_FOLDER}/_definitions"
-  - opera deploy "${ENTRY_DEFINITION}"
+  - cd "${EXPORT_EXTRACT_FOLDER}"
+  - export ENTRY_DEFINITION=`grep "^Entry-Definitions:" "TOSCA-Metadata/TOSCA.meta" | awk '{print $2}' | cut -d'/' -f2`
+  - opera deploy "_definitions/${ENTRY_DEFINITION}"
   - sleep 60
   - export DEPLOYMENT_HTTP=`curl -o /dev/null -s -w "%{http_code}\n" "${DEPLOYMENT_CHECK_URL}"`
   - echo "Deployed service returned HTTP code '$DEPLOYMENT_HTTP'."
