@@ -26,7 +26,12 @@ jobs:
         - EXPORT_URL="http://127.0.0.1:${GMT_HTTP_PORT}/winery/servicetemplates/radon.blueprints.testing/JMeterMasterOnly/?yaml&csar"
         - DEPLOYMENT_PORT="5000"
         - DEPLOYMENT_CHECK_URL="http://localhost:${DEPLOYMENT_PORT}"
-
+    - env:    
+        - NAME="ctt-jmetermasteronly-workaround"
+        - PARTICLES_BRANCH="ctt-workaround"
+        - EXPORT_URL="http://127.0.0.1:${GMT_HTTP_PORT}/winery/servicetemplates/radon.blueprints.testing/JMeterMasterOnly/?yaml&csar"
+        - DEPLOYMENT_PORT="5000"
+        - DEPLOYMENT_CHECK_URL="http://localhost:${DEPLOYMENT_PORT}"
 
 before_install:
   - git clone --single-branch --branch "${PARTICLES_BRANCH}" "${PARTICLES_URL}" "${PARTICLES_DIR}"
