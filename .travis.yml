@@ -11,6 +11,7 @@ env:
     - PARTICLES_DIR="/tmp/radon-particles"
     - EXPORT_FILE="${HOME}/export.csar"
     - EXPORT_EXTRACT_FOLDER="${HOME}/export"
+    - ANSIBLE_PYTHON_INTERPRETER=/usr/bin/python3
 
 jobs:
   include:
