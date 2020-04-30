@@ -29,7 +29,7 @@ jobs:
         - DEPLOYMENT_CHECK_URL="http://localhost:${DEPLOYMENT_PORT}"
 
 before_install:
-  - sudo apt-get -y install docker-compose python3 python3-pip python3-docker python3-apt libapt-pkg-dev
+  - sudo apt-get -y install docker-compose python3 python3-setuptools python3-wheel python3-pip python3-docker python3-apt
   - git clone --single-branch --branch "${PARTICLES_BRANCH}" "${PARTICLES_URL}" "${PARTICLES_DIR}"
   - chmod -R a+rwx "${PARTICLES_DIR}"
   - docker-compose up -d
