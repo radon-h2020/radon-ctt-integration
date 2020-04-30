@@ -11,7 +11,6 @@ env:
     - PARTICLES_DIR="/tmp/radon-particles"
     - EXPORT_FILE="${HOME}/export.csar"
     - EXPORT_EXTRACT_FOLDER="${HOME}/export"
-    - ANSIBLE_PYTHON_INTERPRETER=/usr/bin/python3
 
 jobs:
   include:
@@ -19,6 +18,12 @@ jobs:
         - NAME="native-sockshop"
         - PARTICLES_BRANCH="master"
         - EXPORT_URL="http://127.0.0.1:${GMT_HTTP_PORT}/winery/servicetemplates/radon.blueprints/SockShop/?yaml&csar"
+        - DEPLOYMENT_PORT="80"
+        - DEPLOYMENT_CHECK_URL="http://localhost:${DEPLOYMENT_PORT}"
+    - env:
+        - NAME="ctt-sockshop-example"
+        - PARTICLES_BRANCH="ctt"
+        - EXPORT_URL="http://127.0.0.1:${GMT_HTTP_PORT}/winery/servicetemplates/radon.blueprints/SockShopTestingExample/?yaml&csar"
         - DEPLOYMENT_PORT="80"
         - DEPLOYMENT_CHECK_URL="http://localhost:${DEPLOYMENT_PORT}"
     - env:    
