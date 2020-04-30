@@ -49,7 +49,7 @@ script:
   - unzip "${EXPORT_FILE}" -d "${EXPORT_EXTRACT_FOLDER}"
   - cd "${EXPORT_EXTRACT_FOLDER}"
   - export ENTRY_DEFINITION=`grep "^Entry-Definitions:" "TOSCA-Metadata/TOSCA.meta" | awk '{print $2}' | cut -d'/' -f2`
-  - python3 "${HOME}/policy_delete.py" "_definitions/${ENTRY_DEFINITION}"
+  - python3 "${TRAVIS_BUILD_DIR}/policy_delete.py" "_definitions/${ENTRY_DEFINITION}"
   - opera deploy "_definitions/${ENTRY_DEFINITION}"
   - sleep 60
   - export DEPLOYMENT_HTTP=`curl -o /dev/null -s -w "%{http_code}\n" "${DEPLOYMENT_CHECK_URL}"`
