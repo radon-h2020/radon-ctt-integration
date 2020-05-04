@@ -25,7 +25,7 @@ if len(file_list) == 0:
 
 for file_param in file_list:
   with open(file_param, 'r') as input_file:
-    tosca = yaml.load(input_file, Loader=yaml.FullLoader)
+    tosca = yaml.full_load(input_file)
 
   if 'policy_types' in tosca:
     del tosca['policy_types']
