@@ -62,8 +62,8 @@ install:
   - git clone --single-branch --branch "${PARTICLES_BRANCH}" "${PARTICLES_URL}" "${PARTICLES_DIR}"
   - chmod -R a+rwx "${PARTICLES_DIR}"
   - docker-compose up -d
-  - pip3 install --upgrade pip
-  - pip3 install -r requirements.txt
+  - python3 -m pip install --upgrade pip
+  - python3 -m pip install -r requirements.txt
 
 script:
   - set -e
