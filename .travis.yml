@@ -29,14 +29,14 @@ jobs:
         - DEPLOYMENT_CHECK_URL="http://localhost:${DEPLOYMENT_PORT}"
         - DROP_POLICIES=1
     - env:
-        - NAME="ctt-sockshop-example"
+        - NAME="sockshop-example"
         - PARTICLES_BRANCH="master"
         - EXPORT_URL="http://127.0.0.1:${GMT_HTTP_PORT}/winery/servicetemplates/radon.blueprints/SockShopTestingExample/?yaml&csar"
         - DEPLOYMENT_PORT="80"
         - DEPLOYMENT_CHECK_URL="http://localhost:${DEPLOYMENT_PORT}"
         - DROP_POLICIES=0
     - env:
-        - NAME="ctt-sockshop-example-drop-policies"
+        - NAME="sockshop-example-drop-policies"
         - PARTICLES_BRANCH="master"
         - EXPORT_URL="http://127.0.0.1:${GMT_HTTP_PORT}/winery/servicetemplates/radon.blueprints/SockShopTestingExample/?yaml&csar"
         - DEPLOYMENT_PORT="80"
