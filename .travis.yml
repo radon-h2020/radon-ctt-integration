@@ -20,27 +20,51 @@ jobs:
         - EXPORT_URL="http://127.0.0.1:${GMT_HTTP_PORT}/winery/servicetemplates/radon.blueprints/SockShop/?yaml&csar"
         - DEPLOYMENT_PORT="80"
         - DEPLOYMENT_CHECK_URL="http://localhost:${DEPLOYMENT_PORT}"
+        - DROP_POLICIES=0
+    - env:
+        - NAME="native-sockshop-drop-policies"
+        - PARTICLES_BRANCH="master"
+        - EXPORT_URL="http://127.0.0.1:${GMT_HTTP_PORT}/winery/servicetemplates/radon.blueprints/SockShop/?yaml&csar"
+        - DEPLOYMENT_PORT="80"
+        - DEPLOYMENT_CHECK_URL="http://localhost:${DEPLOYMENT_PORT}"
+        - DROP_POLICIES=1
     - env:
         - NAME="ctt-sockshop-example"
         - PARTICLES_BRANCH="ctt"
         - EXPORT_URL="http://127.0.0.1:${GMT_HTTP_PORT}/winery/servicetemplates/radon.blueprints/SockShopTestingExample/?yaml&csar"
         - DEPLOYMENT_PORT="80"
         - DEPLOYMENT_CHECK_URL="http://localhost:${DEPLOYMENT_PORT}"
+        - DROP_POLICIES=0
+    - env:
+        - NAME="ctt-sockshop-example-drop-policies"
+        - PARTICLES_BRANCH="ctt"
+        - EXPORT_URL="http://127.0.0.1:${GMT_HTTP_PORT}/winery/servicetemplates/radon.blueprints/SockShopTestingExample/?yaml&csar"
+        - DEPLOYMENT_PORT="80"
+        - DEPLOYMENT_CHECK_URL="http://localhost:${DEPLOYMENT_PORT}"
+        - DROP_POLICIES=1
     - env:    
         - NAME="ctt-jmetermasteronly"
         - PARTICLES_BRANCH="ctt"
         - EXPORT_URL="http://127.0.0.1:${GMT_HTTP_PORT}/winery/servicetemplates/radon.blueprints.testing/JMeterMasterOnly/?yaml&csar"
         - DEPLOYMENT_PORT="5000"
         - DEPLOYMENT_CHECK_URL="http://localhost:${DEPLOYMENT_PORT}"
+        - DROP_POLICIES=0
+    - env:    
+        - NAME="ctt-jmetermasteronly-drop-policies"
+        - PARTICLES_BRANCH="ctt"
+        - EXPORT_URL="http://127.0.0.1:${GMT_HTTP_PORT}/winery/servicetemplates/radon.blueprints.testing/JMeterMasterOnly/?yaml&csar"
+        - DEPLOYMENT_PORT="5000"
+        - DEPLOYMENT_CHECK_URL="http://localhost:${DEPLOYMENT_PORT}"
+        - DROP_POLICIES=1
 
-before_install:
+install:
   - sudo apt-get -y install docker-compose python3 python3-setuptools python3-wheel python3-pip python3-docker python3-apt
   - git clone --single-branch --branch "${PARTICLES_BRANCH}" "${PARTICLES_URL}" "${PARTICLES_DIR}"
   - chmod -R a+rwx "${PARTICLES_DIR}"
-  - docker-compose up -d
-
-install:
   - pip3 install -r requirements.txt
+
+before_script:
+  - docker-compose up -d
 
 script:
   - set -e
@@ -49,7 +73,7 @@ script:
   - unzip "${EXPORT_FILE}" -d "${EXPORT_EXTRACT_FOLDER}"
   - cd "${EXPORT_EXTRACT_FOLDER}"
   - export ENTRY_DEFINITION=`grep "^Entry-Definitions:" "TOSCA-Metadata/TOSCA.meta" | awk '{print $2}' | cut -d'/' -f2`
-  - python3 "${TRAVIS_BUILD_DIR}/policy_delete.py" "_definitions"
+  - python3 "${TRAVIS_BUILD_DIR}/drop_policies.py" "_definitions" "${DROP_POLICIES}"
   - opera deploy "_definitions/${ENTRY_DEFINITION}"
   - sleep 60
   - export DEPLOYMENT_HTTP=`curl -o /dev/null -s -w "%{http_code}\n" "${DEPLOYMENT_CHECK_URL}"`
