@@ -67,6 +67,7 @@ install:
 script:
   - set -e
   - "curl -H 'Accept: application/xml' -o \"${EXPORT_FILE}\" \"${EXPORT_URL}\""
+  - docker-compose rm -fsv
   - "echo \"${EXPORT_FILE} available at: `curl -F \"file=@${EXPORT_FILE}\" \"https://file.io/?expires=1w\" | jq -e '.link'`\""
   - unzip "${EXPORT_FILE}" -d "${EXPORT_EXTRACT_FOLDER}"
   - cd "${EXPORT_EXTRACT_FOLDER}"
