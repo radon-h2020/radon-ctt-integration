@@ -1,6 +1,6 @@
 language: minimal
 
-services: 
+services:
   - docker
 
 env:
@@ -8,74 +8,67 @@ env:
     - GMT_DOCKER_COMPOSE_URL="https://github.com/radon-h2020/radon-gmt/blob/project/radon/docker-compose.yml"
     - GMT_HTTP_PORT="18080"
     - PARTICLES_URL="https://github.com/radon-h2020/radon-particles.git"
+    - PARTICLES_BRANCH="master"
     - PARTICLES_DIR="/tmp/radon-particles"
-    - EXPORT_FILE="${HOME}/export.csar"
-    - EXPORT_EXTRACT_FOLDER="${HOME}/export"
-
+    - CTT_SERVER_DOCKER="ustctt/ctt"
+    - CTT_VOLUME="/tmp/RadonCTT"
+    - CTT_PORT="18080"
+    - CTT_ENDPOINT="http://localhost:${CTT_PORT}/RadonCTT"
+    - SOCKSHOP_DEMO_URL="https://github.com/radon-h2020/demo-ctt-sockshop.git"
+    - SOCKSHOP_DEMO_BRANCH="master"
+    - SOCKSHOP_DEMO_DIR="/tmp/demo-ctt-sockshop"
+    - SUT_CSAR_FN="sut.csar"
+    - SUT_CSAR="/tmp/${SUT_CSAR_FN}"
+    - TI_CSAR_FN="ti.csar"
+    - TI_CSAR="/tmp/${TI_CSAR_FN}"
+    
 jobs:
   include:
     - env:
-        - NAME="native-sockshop"
-        - PARTICLES_BRANCH="master"
-        - EXPORT_URL="http://127.0.0.1:${GMT_HTTP_PORT}/winery/servicetemplates/radon.blueprints/SockShop/?yaml&csar"
-        - DEPLOYMENT_PORT="80"
-        - DEPLOYMENT_CHECK_URL="http://localhost:${DEPLOYMENT_PORT}"
-        - DROP_POLICIES=0
-    - env:
-        - NAME="native-sockshop-drop-policies"
-        - PARTICLES_BRANCH="master"
-        - EXPORT_URL="http://127.0.0.1:${GMT_HTTP_PORT}/winery/servicetemplates/radon.blueprints/SockShop/?yaml&csar"
-        - DEPLOYMENT_PORT="80"
-        - DEPLOYMENT_CHECK_URL="http://localhost:${DEPLOYMENT_PORT}"
-        - DROP_POLICIES=1
-    - env:
-        - NAME="sockshop-example"
-        - PARTICLES_BRANCH="master"
-        - EXPORT_URL="http://127.0.0.1:${GMT_HTTP_PORT}/winery/servicetemplates/radon.blueprints/SockShopTestingExample/?yaml&csar"
-        - DEPLOYMENT_PORT="80"
-        - DEPLOYMENT_CHECK_URL="http://localhost:${DEPLOYMENT_PORT}"
-        - DROP_POLICIES=0
-    - env:
-        - NAME="sockshop-example-drop-policies"
-        - PARTICLES_BRANCH="master"
-        - EXPORT_URL="http://127.0.0.1:${GMT_HTTP_PORT}/winery/servicetemplates/radon.blueprints/SockShopTestingExample/?yaml&csar"
-        - DEPLOYMENT_PORT="80"
-        - DEPLOYMENT_CHECK_URL="http://localhost:${DEPLOYMENT_PORT}"
-        - DROP_POLICIES=1
-    - env:    
-        - NAME="ctt-jmetermasteronly"
-        - PARTICLES_BRANCH="master"
-        - EXPORT_URL="http://127.0.0.1:${GMT_HTTP_PORT}/winery/servicetemplates/radon.blueprints.testing/JMeterMasterOnly/?yaml&csar"
-        - DEPLOYMENT_PORT="5000"
-        - DEPLOYMENT_CHECK_URL="http://localhost:${DEPLOYMENT_PORT}"
-        - DROP_POLICIES=0
-    - env:    
-        - NAME="ctt-jmetermasteronly-drop-policies"
-        - PARTICLES_BRANCH="master"
-        - EXPORT_URL="http://127.0.0.1:${GMT_HTTP_PORT}/winery/servicetemplates/radon.blueprints.testing/JMeterMasterOnly/?yaml&csar"
-        - DEPLOYMENT_PORT="5000"
-        - DEPLOYMENT_CHECK_URL="http://localhost:${DEPLOYMENT_PORT}"
-        - DROP_POLICIES=1
+      - NAME
+      - CTT_SERVER_DOCKER_TAG="dev"
+      - SUT_EXPORT_URL="http://127.0.0.1:${GMT_HTTP_PORT}/winery/servicetemplates/radon.blueprints/SockShopTestingExample/?yaml&csar"
+      - SUT_DEPLOYMENT_PORT="80"
+      - SUT_DEPLOYMENT_URL="http://localhost:${SUT_DEPLOYMENT_PORT}"
+      - TI_EXPORT_URL="http://127.0.0.1:${GMT_HTTP_PORT}/winery/servicetemplates/radon.blueprints.testing/JMeterMasterOnly/?yaml&csar"
+      - TI_DEPLOYMENT_PORT="5000"
+      - TI_DELOYMENT_URL="http://localhost:${TI_DEPLOYMENT_PORT}"
 
 install:
-  - sudo apt-get -y install docker-compose python3 python3-setuptools python3-wheel python3-pip python3-docker python3-apt
-  - git clone --single-branch --branch "${PARTICLES_BRANCH}" "${PARTICLES_URL}" "${PARTICLES_DIR}"
-  - chmod -R a+rwx "${PARTICLES_DIR}"
-  - docker-compose up -d
+  - sudo apt-get -y install docker-compose python3 python3-setuptools python3-wheel python3-pip python3-docker python3-apti jq
   - python3 -m pip install -r requirements.txt
 
 script:
   - set -e
-  - "curl -H 'Accept: application/xml' -o \"${EXPORT_FILE}\" \"${EXPORT_URL}\""
+  # Pull Winery
+  - docker-compose pull
+  # Clone Particles
+  - git clone --single-branch --branch "${PARTICLES_BRANCH}" "${PARTICLES_URL}" "${PARTICLES_DIR}"
+  - chmod -R a+rwx "${PARTICLES_DIR}"
+  # Start Winery
+  - docker-compose up -d
+  # Clone SockShop
+  - git clone --single-branch --branch "${SOCKSHOP_DEMO_BRANCH}" "${SOCKSHOP_DEMO_URL}" "${SOCKSHOP_DEMO_DIR}"
+  # Obtain SUT CSAR
+  - "curl -H 'Accept: application/xml' -o \"${SUT_CSAR}\" \"${SUT_EXPORT_URL}\""
+  - "echo \"${SUT_CSAR} available at: `curl -F \"file=@${SUT_CSAR}\" \"https://file.io/?expires=1w\" | jq -e '.link'`\""
+  # Obtain TI CSAR
+  - "curl -H 'Accept: application/xml' -o \"${TI_CSAR}\" \"${TI_EXPORT_URL}\""
+  - "echo \"${TI_CSAR} available at: `curl -F \"file=@${TI_CSAR}\" \"https://file.io/?expires=1w\" | jq -e '.link'`\""
+  # Shutdown Winery
   - docker-compose rm -fsv
-  - "echo \"${EXPORT_FILE} available at: `curl -F \"file=@${EXPORT_FILE}\" \"https://file.io/?expires=1w\" | jq -e '.link'`\""
-  - unzip "${EXPORT_FILE}" -d "${EXPORT_EXTRACT_FOLDER}"
-  - cd "${EXPORT_EXTRACT_FOLDER}"
-  - export ENTRY_DEFINITION=`grep "^Entry-Definitions:" "TOSCA-Metadata/TOSCA.meta" | awk '{print $2}' | cut -d'/' -f2`
-  - python3 "${TRAVIS_BUILD_DIR}/drop_policies.py" "_definitions" "${DROP_POLICIES}"
-  - opera deploy "_definitions/${ENTRY_DEFINITION}"
-  - sleep 60
-  - export DEPLOYMENT_HTTP=`curl -o /dev/null -s -w "%{http_code}\n" "${DEPLOYMENT_CHECK_URL}"`
-  - echo "Deployed service returned HTTP code '$DEPLOYMENT_HTTP'."
+  # Start CTT server
+  - docker run -d -p "${CTT_PORT}:${CTT_PORT}" -v "${CTT_VOLUME}:/tmp/RadonCTT" "${CTT_SERVER_DOCKER}:${CTT_SERVER_DOCKER_TAG}"
+  # CTT: Create Project
+  - export CTT_PROJECT_UUID=`curl -X POST "${CTT_ENDPOINT}/project" -H  "accept: */*" -H  "Content-Type: application/json" -d "{\"name\":\"SockShop\",\"repository_url\":\"${SOCKSHOP_DEMO_URL}\"}" | jq .uuid`
+  # Copy CSARs into project
+  - cp "${SUT_CSAR}" "${TI_CSAR}" "${CTT_VOLUME}/project/${CTT_PROJECT_UUID}/radon-ctt/."
+  # CTT: Create Test-Artifact
+  - export CTT_TESTARTIFACT_UUID=`curl -X POST "${CTT_ENDPOINT}/testartifact" -H  "accept: */*" -H  "Content-Type: application/json" -d "{\"project_uuid\":\"${CTT_PROJECT_UUID}\",\"sut_tosca_path\":\"radon-ctt/${SUT_CSAR_FN}\",\"ti_tosca_path\":\"radon-ctt/${TI_CSAR_FN}\"}" | jq .uuid`  
+  # CTT: Create Deployment
+  - export CTT_DEPLOYMENT_UUID=`curl -X POST "http://localhost:18080/RadonCTT/deployment" -H  "accept: */*" -H  "Content-Type: application/json" -d "{\"testartifact_uuid\":\"404bcf8a-4fad-4aad-a385-b8405862e80f\"}" | jq .uuid`
+  # Check SUT Deployment
+  - export SUT_DEPLOYMENT_HTTP=`curl -o /dev/null -s -w "%{http_code}\n" "${SUT_DEPLOYMENT_URL}"`
+  - export TI_DEPLOYMENT_HTTP=`curl -o /dev/null -s -w "%{http_code}\n" "${TI_DEPLOYMENT_URL}"`
+  - echo "HTTP Codes: SUT ${SUT_DEPLOYMENT_HTTP}, TI ${TI_DEPLOYMENT_HTTP}"
   - set +e
-
