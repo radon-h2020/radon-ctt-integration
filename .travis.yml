@@ -87,6 +87,6 @@ script:
   - set +e
 
 after_script:
-  - docker logs cttserver > ctt_docker.log
+  - docker logs cttserver | tee ctt_docker.log
   - "echo \"CTT logs available at: `curl -F \"file=@ctt_docker.log\" \"https://file.io/?expires=1w\" | jq -e '.link'`\""
 
