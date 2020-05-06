@@ -46,7 +46,7 @@ jobs:
       - TI_DELOYMENT_URL="http://localhost:${TI_DEPLOYMENT_PORT}"
 
 install:
-  - sudo apt-get -y install docker-compose python3 python3-setuptools python3-wheel python3-pip python3-docker python3-apti jq
+  - sudo apt-get -y install docker-compose python3 python3-setuptools python3-wheel python3-pip python3-docker python3-apt jq
   - python3 -m pip install -r requirements.txt
 
 script:
