@@ -61,7 +61,7 @@ script:
   - docker-compose up -d
   # Start CTT server
   - mkdir ${CTT_VOLUME}
-  - docker run -d -u $(id -u) -p "127.0.0.1:${CTT_EXT_PORT}:${CTT_PORT}" -v "${CTT_VOLUME}:/tmp/RadonCTT" "${CTT_SERVER_DOCKER}:${CTT_SERVER_DOCKER_TAG}"
+  - docker run --name cttserver -d -u $(id -u) -p "127.0.0.1:${CTT_EXT_PORT}:${CTT_PORT}" -v "${CTT_VOLUME}:/tmp/RadonCTT" "${CTT_SERVER_DOCKER}:${CTT_SERVER_DOCKER_TAG}"
   # Clone SockShop
   - git clone --single-branch --branch "${SOCKSHOP_DEMO_BRANCH}" "${SOCKSHOP_DEMO_URL}" "${SOCKSHOP_DEMO_DIR}"
   # Obtain SUT CSAR
@@ -81,7 +81,12 @@ script:
   # CTT: Create Deployment
   - "export CTT_DEPLOYMENT_UUID=$(./curl_uuid.sh  \"${CTT_ENDPOINT}/deployment\" \"{\\\"testartifact_uuid\\\":\\\"${CTT_TESTARTIFACT_UUID}\\\"}\")"
   # Check SUT Deployment
-  - export SUT_DEPLOYMENT_HTTP=$(curl -o /dev/null -s -w "%{http_code}\n" "${SUT_DEPLOYMENT_URL}")
-  - export TI_DEPLOYMENT_HTTP=$(curl -o /dev/null -s -w "%{http_code}\n" "${TI_DEPLOYMENT_URL}")
+  - "export SUT_DEPLOYMENT_HTTP=$(curl -o /dev/null -s -w \"%{http_code}\n\" \"${SUT_DEPLOYMENT_URL}\")"
+  - "export TI_DEPLOYMENT_HTTP=$(curl -o /dev/null -s -w \"%{http_code}\n\" \"${TI_DEPLOYMENT_URL}\")"
   - "echo HTTP Codes: SUT ${SUT_DEPLOYMENT_HTTP}, TI ${TI_DEPLOYMENT_HTTP}"
   - set +e
+
+after_script:
+  - docker logs cttserver > ctt_docker.log
+  - "echo \"CTT logs available at: `curl -F \"file=@ctt_docker.log\" \"https://file.io/?expires=1w\" | jq -e '.link'`\""
+
