@@ -1,4 +1,6 @@
-language: minimal
+os: linux
+dist: bionic
+language: shell
 
 services:
   - docker
@@ -69,15 +71,15 @@ script:
   # Start CTT server
   - docker run -d -p "${CTT_PORT}:${CTT_PORT}" -v "${CTT_VOLUME}:/tmp/RadonCTT" "${CTT_SERVER_DOCKER}:${CTT_SERVER_DOCKER_TAG}"
   # CTT: Create Project
-  - export CTT_PROJECT_UUID=`curl -X POST "${CTT_ENDPOINT}/project" -H  "accept: */*" -H  "Content-Type: application/json" -d "{\"name\":\"SockShop\",\"repository_url\":\"${SOCKSHOP_DEMO_URL}\"}" | jq .uuid`
+  - "export CTT_PROJECT_UUID=$(curl -X POST \"${CTT_ENDPOINT}/project\" -H  'accept: */*' -H  'Content-Type: application/json' -d \"{\"name\":\"SockShop\",\"repository_url\":\"${SOCKSHOP_DEMO_URL}\"}\" | jq .uuid)"
   # Copy CSARs into project
   - cp "${SUT_CSAR}" "${TI_CSAR}" "${CTT_VOLUME}/project/${CTT_PROJECT_UUID}/radon-ctt/."
   # CTT: Create Test-Artifact
-  - export CTT_TESTARTIFACT_UUID=`curl -X POST "${CTT_ENDPOINT}/testartifact" -H  "accept: */*" -H  "Content-Type: application/json" -d "{\"project_uuid\":\"${CTT_PROJECT_UUID}\",\"sut_tosca_path\":\"radon-ctt/${SUT_CSAR_FN}\",\"ti_tosca_path\":\"radon-ctt/${TI_CSAR_FN}\"}" | jq .uuid`  
+  - "export CTT_TESTARTIFACT_UUID=$(curl -X POST \"${CTT_ENDPOINT}/testartifact\" -H  'accept: */*' -H  'Content-Type: application/json' -d \"{\"project_uuid\":\"${CTT_PROJECT_UUID}\",\"sut_tosca_path\":\"radon-ctt/${SUT_CSAR_FN}\",\"ti_tosca_path\":\"radon-ctt/${TI_CSAR_FN}\"}\" | jq .uuid)"
   # CTT: Create Deployment
-  - export CTT_DEPLOYMENT_UUID=`curl -X POST "http://localhost:18080/RadonCTT/deployment" -H  "accept: */*" -H  "Content-Type: application/json" -d "{\"testartifact_uuid\":\"404bcf8a-4fad-4aad-a385-b8405862e80f\"}" | jq .uuid`
+  - "export CTT_DEPLOYMENT_UUID=$(curl -X POST \"http://localhost:18080/RadonCTT/deployment\" -H  'accept: */*' -H  'Content-Type: application/json' -d \"{\"testartifact_uuid\":\"404bcf8a-4fad-4aad-a385-b8405862e80f\"}\" | jq .uuid)"
   # Check SUT Deployment
-  - export SUT_DEPLOYMENT_HTTP=`curl -o /dev/null -s -w "%{http_code}\n" "${SUT_DEPLOYMENT_URL}"`
-  - export TI_DEPLOYMENT_HTTP=`curl -o /dev/null -s -w "%{http_code}\n" "${TI_DEPLOYMENT_URL}"`
-  - echo "HTTP Codes: SUT ${SUT_DEPLOYMENT_HTTP}, TI ${TI_DEPLOYMENT_HTTP}"
+  - export SUT_DEPLOYMENT_HTTP=$(curl -o /dev/null -s -w "%{http_code}\n" "${SUT_DEPLOYMENT_URL}")
+  - export TI_DEPLOYMENT_HTTP=$(curl -o /dev/null -s -w "%{http_code}\n" "${TI_DEPLOYMENT_URL}")
+  - "echo HTTP Codes: SUT ${SUT_DEPLOYMENT_HTTP}, TI ${TI_DEPLOYMENT_HTTP}"
   - set +e
