@@ -15,7 +15,8 @@ env:
     - CTT_SERVER_DOCKER="ustctt/ctt"
     - CTT_VOLUME="/tmp/RadonCTT"
     - CTT_PORT="18080"
-    - CTT_ENDPOINT="http://localhost:${CTT_PORT}/RadonCTT"
+    - CTT_EXT_PORT="7999"
+    - CTT_ENDPOINT="http://localhost:${CTT_EXT_PORT}/RadonCTT"
     - SOCKSHOP_DEMO_URL="https://github.com/radon-h2020/demo-ctt-sockshop.git"
     - SOCKSHOP_DEMO_BRANCH="master"
     - SOCKSHOP_DEMO_DIR="/tmp/demo-ctt-sockshop"
@@ -59,7 +60,7 @@ script:
   # Start Winery
   - docker-compose up -d
   # Start CTT server
-  - docker run -d -p "127.0.0.1:${CTT_PORT}:${CTT_PORT}" -v "${CTT_VOLUME}:/tmp/RadonCTT" "${CTT_SERVER_DOCKER}:${CTT_SERVER_DOCKER_TAG}"
+  - docker run -d -p "127.0.0.1:${CTT_EXT_PORT}:${CTT_PORT}" -v "${CTT_VOLUME}:/tmp/RadonCTT" "${CTT_SERVER_DOCKER}:${CTT_SERVER_DOCKER_TAG}"
   # Clone SockShop
   - git clone --single-branch --branch "${SOCKSHOP_DEMO_BRANCH}" "${SOCKSHOP_DEMO_URL}" "${SOCKSHOP_DEMO_DIR}"
   # Obtain SUT CSAR
