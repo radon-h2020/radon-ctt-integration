@@ -60,6 +60,7 @@ script:
   # Start Winery
   - docker-compose up -d
   # Start CTT server
+  - mkdir ${CTT_VOLUME}
   - docker run -d -u $(id -u) -p "127.0.0.1:${CTT_EXT_PORT}:${CTT_PORT}" -v "${CTT_VOLUME}:/tmp/RadonCTT" "${CTT_SERVER_DOCKER}:${CTT_SERVER_DOCKER_TAG}"
   # Clone SockShop
   - git clone --single-branch --branch "${SOCKSHOP_DEMO_BRANCH}" "${SOCKSHOP_DEMO_URL}" "${SOCKSHOP_DEMO_DIR}"
