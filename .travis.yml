@@ -58,6 +58,8 @@ script:
   - chmod -R a+rwx "${PARTICLES_DIR}"
   # Start Winery
   - docker-compose up -d
+  # Start CTT server
+  - docker run -d -p "${CTT_PORT}:${CTT_PORT}" -v "${CTT_VOLUME}:/tmp/RadonCTT" "${CTT_SERVER_DOCKER}:${CTT_SERVER_DOCKER_TAG}"
   # Clone SockShop
   - git clone --single-branch --branch "${SOCKSHOP_DEMO_BRANCH}" "${SOCKSHOP_DEMO_URL}" "${SOCKSHOP_DEMO_DIR}"
   # Obtain SUT CSAR
@@ -68,8 +70,6 @@ script:
   - "echo \"${TI_CSAR} available at: `curl -F \"file=@${TI_CSAR}\" \"https://file.io/?expires=1w\" | jq -e '.link'`\""
   # Shutdown Winery
   - docker-compose rm -fsv
-  # Start CTT server
-  - docker run -d -p "${CTT_PORT}:${CTT_PORT}" -v "${CTT_VOLUME}:/tmp/RadonCTT" "${CTT_SERVER_DOCKER}:${CTT_SERVER_DOCKER_TAG}"
   # CTT: Create Project
   - "export CTT_PROJECT_UUID=$(curl -X POST \"${CTT_ENDPOINT}/project\" -H  'accept: */*' -H  'Content-Type: application/json' -d \"{\"name\":\"SockShop\",\"repository_url\":\"${SOCKSHOP_DEMO_URL}\"}\" | jq .uuid)"
   # Copy CSARs into project
