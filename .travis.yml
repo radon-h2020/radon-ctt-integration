@@ -35,7 +35,7 @@ jobs:
       - SUT_DEPLOYMENT_URL="http://localhost:${SUT_DEPLOYMENT_PORT}"
       - TI_EXPORT_URL="http://127.0.0.1:${GMT_HTTP_PORT}/winery/servicetemplates/radon.blueprints.testing/JMeterMasterOnly/?yaml&csar"
       - TI_DEPLOYMENT_PORT="5000"
-      - TI_DELOYMENT_URL="http://localhost:${TI_DEPLOYMENT_PORT}"
+      - TI_DEPLOYMENT_URL="http://localhost:${TI_DEPLOYMENT_PORT}"
     - env:
       - NAME="CTT-master"
       - CTT_SERVER_DOCKER_TAG="latest"
