@@ -61,7 +61,7 @@ script:
   - docker-compose up -d
   # Start CTT server
   - mkdir ${CTT_VOLUME}
-  - docker run --name cttserver -d -u $(id -u) -p "127.0.0.1:${CTT_EXT_PORT}:${CTT_PORT}" -v /var/run/docker.sock:/var/run/docker.sock -v "${CTT_VOLUME}:/tmp/RadonCTT" "${CTT_SERVER_DOCKER}:${CTT_SERVER_DOCKER_TAG}"
+  - docker run --name cttserver -d -p "127.0.0.1:${CTT_EXT_PORT}:${CTT_PORT}" -v /var/run/docker.sock:/var/run/docker.sock -v "${CTT_VOLUME}:/tmp/RadonCTT" "${CTT_SERVER_DOCKER}:${CTT_SERVER_DOCKER_TAG}"
   # Clone SockShop
   - git clone --single-branch --branch "${SOCKSHOP_DEMO_BRANCH}" "${SOCKSHOP_DEMO_URL}" "${SOCKSHOP_DEMO_DIR}"
   # Obtain SUT CSAR
@@ -75,7 +75,7 @@ script:
   # CTT: Create Project
   - "export CTT_PROJECT_UUID=$(./curl_uuid.sh \"${CTT_ENDPOINT}/project\" \"{\\\"name\\\":\\\"SockShop\\\",\\\"repository_url\\\":\\\"${SOCKSHOP_DEMO_URL}\\\"}\")"
   # Copy CSARs into project
-  - cp "${SUT_CSAR}" "${TI_CSAR}" "${CTT_VOLUME}/project/${CTT_PROJECT_UUID}/radon-ctt/."
+  - sudo cp "${SUT_CSAR}" "${TI_CSAR}" "${CTT_VOLUME}/project/${CTT_PROJECT_UUID}/radon-ctt/."
   # CTT: Create Test-Artifact
   - "export CTT_TESTARTIFACT_UUID=$(./curl_uuid.sh \"${CTT_ENDPOINT}/testartifact\" \"{\\\"project_uuid\\\":\\\"${CTT_PROJECT_UUID}\\\",\\\"sut_tosca_path\\\":\\\"radon-ctt/${SUT_CSAR_FN}\\\",\\\"ti_tosca_path\\\":\\\"radon-ctt/${TI_CSAR_FN}\\\"}\")"
   # CTT: Create Deployment
