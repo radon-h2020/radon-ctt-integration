@@ -12,11 +12,12 @@ env:
     - PARTICLES_URL="https://github.com/radon-h2020/radon-particles.git"
     - PARTICLES_BRANCH="master"
     - PARTICLES_DIR="/tmp/radon-particles"
-    - CTT_SERVER_DOCKER="ustctt/ctt"
+    - CTT_SERVER_DOCKER="radonconsortium/radon-ctt:latest"
     - CTT_VOLUME="/tmp/RadonCTT"
     - CTT_PORT="18080"
     - CTT_EXT_PORT="7999"
     - CTT_ENDPOINT="http://localhost:${CTT_EXT_PORT}/RadonCTT"
+    - CTT_RESULT_FILE="/tmp/result.zip"
     - SOCKSHOP_DEMO_URL="https://github.com/radon-h2020/demo-ctt-sockshop.git"
     - SOCKSHOP_DEMO_BRANCH="master"
     - SOCKSHOP_DEMO_DIR="/tmp/demo-ctt-sockshop"
@@ -61,7 +62,7 @@ script:
   - docker-compose up -d
   # Start CTT server
   - mkdir ${CTT_VOLUME}
-  - docker run --name cttserver -d -p "127.0.0.1:${CTT_EXT_PORT}:${CTT_PORT}" -v /var/run/docker.sock:/var/run/docker.sock -v "${CTT_VOLUME}:/tmp/RadonCTT" "${CTT_SERVER_DOCKER}:${CTT_SERVER_DOCKER_TAG}"
+  - docker run --name RadonCTT -d -p "127.0.0.1:${CTT_EXT_PORT}:${CTT_PORT}" -v /var/run/docker.sock:/var/run/docker.sock -v "${CTT_VOLUME}:/tmp/RadonCTT" "${CTT_SERVER_DOCKER}:${CTT_SERVER_DOCKER_TAG}"
   # Clone SockShop
   - git clone --single-branch --branch "${SOCKSHOP_DEMO_BRANCH}" "${SOCKSHOP_DEMO_URL}" "${SOCKSHOP_DEMO_DIR}"
   # Obtain SUT CSAR
@@ -81,11 +82,17 @@ script:
   # CTT: Create Deployment
   - "export CTT_DEPLOYMENT_UUID=$(./curl_uuid.sh  \"${CTT_ENDPOINT}/deployment\" \"{\\\"testartifact_uuid\\\":\\\"${CTT_TESTARTIFACT_UUID}\\\"}\")"
   # Give deployments some time to succeed.
-  - sleep 60
+  - sleep 120
   # Check SUT Deployment
   - "export SUT_DEPLOYMENT_HTTP=$(curl -o /dev/null -s -w \"%{http_code}\\n\" \"${SUT_DEPLOYMENT_URL}\")"
   - "export TI_DEPLOYMENT_HTTP=$(curl -o /dev/null -s -w \"%{http_code}\\n\" \"${TI_DEPLOYMENT_URL}\")"
   - "echo HTTP Codes: SUT ${SUT_DEPLOYMENT_HTTP}, TI ${TI_DEPLOYMENT_HTTP}"
+  - "export CTT_EXECUTION_UUID=$(./curl_uuid.sh \"${CTT_ENDPOINT}/execution\" \"{\\\"deployment_uuid\\\":\\\"${CTT_DEPLOYMENT_UUID}\\\"}\")"
+  - sleep 30
+  - "export CTT_RESULT_UUID=$(./curl_uuid.sh \"${CTT_ENDPOINT}/result\" \"{\\\"execution_uuid\\\":\\\"${CTT_EXECUTION_UUID}\\\"}\")"
+  - "wget \"${CTT_ENDPOINT}/result/${CTT_RESULT_UUID/download\" -O \"${CTT_RESULT_FILE}\"" 
+  - "echo \"CTT result file available at `curl -F \"file=@${CTT_RESULT_FILE}\" \"https://file.io/?expires=1w\""
+  - "ls -al \"${CTT_RESULT_FILE}\""
   - set +e
 
 after_script:
