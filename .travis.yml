@@ -12,7 +12,7 @@ env:
     - PARTICLES_URL="https://github.com/radon-h2020/radon-particles.git"
     - PARTICLES_BRANCH="master"
     - PARTICLES_DIR="/tmp/radon-particles"
-    - CTT_SERVER_DOCKER="radonconsortium/radon-ctt:latest"
+    - CTT_SERVER_DOCKER="radonconsortium/radon-ctt"
     - CTT_VOLUME="/tmp/RadonCTT"
     - CTT_PORT="18080"
     - CTT_EXT_PORT="7999"
