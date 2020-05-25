@@ -12,6 +12,7 @@ env:
     - PARTICLES_URL="https://github.com/radon-h2020/radon-particles.git"
     - PARTICLES_BRANCH="master"
     - PARTICLES_DIR="/tmp/radon-particles"
+    - CTT_DOCKER_NAME="RadonCTT"
     - CTT_SERVER_DOCKER="radonconsortium/radon-ctt"
     - CTT_VOLUME="/tmp/RadonCTT"
     - CTT_PORT="18080"
@@ -62,7 +63,7 @@ script:
   - docker-compose up -d
   # Start CTT server
   - mkdir ${CTT_VOLUME}
-  - docker run --name RadonCTT -d -p "127.0.0.1:${CTT_EXT_PORT}:${CTT_PORT}" -v /var/run/docker.sock:/var/run/docker.sock -v "${CTT_VOLUME}:/tmp/RadonCTT" "${CTT_SERVER_DOCKER}:${CTT_SERVER_DOCKER_TAG}"
+  - docker run --name "${CTT_DOCKER_NAME}" -d -p "127.0.0.1:${CTT_EXT_PORT}:${CTT_PORT}" -v /var/run/docker.sock:/var/run/docker.sock -v "${CTT_VOLUME}:/tmp/RadonCTT" "${CTT_SERVER_DOCKER}:${CTT_SERVER_DOCKER_TAG}"
   # Clone SockShop
   - git clone --single-branch --branch "${SOCKSHOP_DEMO_BRANCH}" "${SOCKSHOP_DEMO_URL}" "${SOCKSHOP_DEMO_DIR}"
   # Obtain SUT CSAR
@@ -98,6 +99,6 @@ script:
   - set +e
 
 after_script:
-  - docker logs cttserver | tee ctt_docker.log
+  - docker logs "${CTT_DOCKER_NAME}" | tee ctt_docker.log
   - "echo \"CTT logs available at: `curl -F \"file=@ctt_docker.log\" \"https://file.io/?expires=1w\" | jq -e '.link'`\""
 
