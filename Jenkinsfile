@@ -39,54 +39,50 @@ pipeline {
       }
     }
 
-    stage('Obtain Service Templates') {
-      parallel {
-        stage('Obtain SUT Service Templates') {
-          matrix {
-            agent any
-            axes {
-              axis {
-                name 'SERVICE_TEMPLATE'
-                values 'SockShopTestingExample', 'ThumbnailGeneration'
-              }
-            }
-            stages {
-              stage('Query Service Template') {
-                environment {
-                  CSAR = "SUT_${SERVICE_TEMPLATE}.csar"
-                }
-                steps {
-                  sh "curl -H 'Accept: application/xml' -o ${CSAR} ${PARTICLES_EXPORT_URL}/radon.blueprints/${SERVICE_TEMPLATE}/?yaml&csar"
-                  stash name: "${SERVICE_TEMPLATE}", includes: "${CSAR}"
-                }
-              }
-            }
+    stage('Obtain SUT Service Templates') {
+      matrix {
+	agent any
+	axes {
+	  axis {
+	    name 'SERVICE_TEMPLATE'
+	    values 'SockShopTestingExample', 'ThumbnailGeneration'
+	  }
+	}
+	stages {
+	  stage('Query Service Template') {
+	    environment {
+	      CSAR = "SUT_${SERVICE_TEMPLATE}.csar"
+	    }
+	    steps {
+	      sh "curl -H 'Accept: application/xml' -o ${CSAR} ${PARTICLES_EXPORT_URL}/radon.blueprints/${SERVICE_TEMPLATE}/?yaml&csar"
+	      stash name: "${SERVICE_TEMPLATE}", includes: "${CSAR}"
+	    }
+	  }
+	}
+	
+    stage('Obtain TI Service Templates') {
+      matrix {
+        agent any
+        axes {
+          axis {
+            name 'SERVICE_TEMPLATE'
+            values 'JMeterMasterOnly', 'DeploymentTestAgent'
           }
         }
-        stage('Obtain TI Service Templates') {
-          matrix {
-            agent any
-            axes {
-              axis {
-                name 'SERVICE_TEMPLATE'
-                values 'JMeterMasterOnly', 'DeploymentTestAgent'
-              }
+        stages {
+          stage('Query Service Template') {
+            environment {
+              CSAR = "TI_${SERVICE_TEMPLATE}"
             }
-            stages {
-              stage('Query Service Template') {
-                environment {
-                  CSAR = "TI_${SERVICE_TEMPLATE}"
-                }
-                steps {
-                  sh "curl -H 'Accept: application/xml' -o ${CSAR} ${PARTICLES_EXPORT_URL}/radon.blueprints.testing/${SERVICE_TEMPLATE}/?yaml&csar"
-                  stash name: "${SERVICE_TEMPLATE}", includes: "${CSAR}"
-                }
-              }
+            steps {
+              sh "curl -H 'Accept: application/xml' -o ${CSAR} ${PARTICLES_EXPORT_URL}/radon.blueprints.testing/${SERVICE_TEMPLATE}/?yaml&csar"
+              stash name: "${SERVICE_TEMPLATE}", includes: "${CSAR}"
             }
-          }
-        }  
+          }  
+        }
       }
     }
+    
     stage('Stop GMT and Clean up') {
       steps {
         sh "docker-compose -fsv"
