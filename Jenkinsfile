@@ -41,24 +41,26 @@ pipeline {
 
     stage('Obtain SUT Service Templates') {
       matrix {
-	agent any
-	axes {
-	  axis {
-	    name 'SERVICE_TEMPLATE'
-	    values 'SockShopTestingExample', 'ThumbnailGeneration'
-	  }
-	}
-	stages {
-	  stage('Query Service Template') {
-	    environment {
-	      CSAR = "SUT_${SERVICE_TEMPLATE}.csar"
-	    }
-	    steps {
-	      sh "curl -H 'Accept: application/xml' -o ${CSAR} ${PARTICLES_EXPORT_URL}/radon.blueprints/${SERVICE_TEMPLATE}/?yaml&csar"
-	      stash name: "${SERVICE_TEMPLATE}", includes: "${CSAR}"
-	    }
-	  }
-	}
+	      agent any
+	      axes {
+	        axis {
+	          name 'SERVICE_TEMPLATE'
+           values 'SockShopTestingExample', 'ThumbnailGeneration'
+	        }
+	      }
+      	stages {
+	        stage('Query Service Template') {
+	          environment {
+	            CSAR = "SUT_${SERVICE_TEMPLATE}.csar"
+	          }
+	          steps {
+	            sh "curl -H 'Accept: application/xml' -o ${CSAR} ${PARTICLES_EXPORT_URL}/radon.blueprints/${SERVICE_TEMPLATE}/?yaml&csar"
+	            stash name: "${SERVICE_TEMPLATE}", includes: "${CSAR}"
+	          }
+	        }
+	      }
+      }
+    }
 	
     stage('Obtain TI Service Templates') {
       matrix {
