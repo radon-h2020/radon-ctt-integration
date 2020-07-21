@@ -19,7 +19,7 @@ pipeline {
     PARTICLES_DIR = "radon-particles"
     PARTICLES_EXPORT_URL = "http://127.0.0.1:${GMT_HTTP_PORT}/winery/servicetemplates/"
 
-    CTT_DOCKER_NAME = "RadonCTT
+    CTT_DOCKER_NAME = "RadonCTT"
     CTT_DOCKER_ORG = "radonconsortium"
     CTT_DOCKER_REPO = "radon-ctt"
     CTT_DOCKER_FQN = "${DOCKER_ORG}/${DOCKER_REPO}"
