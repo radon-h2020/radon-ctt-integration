@@ -62,30 +62,29 @@ pipeline {
               }
             }
           }
-
-          stage('Obtain TI Service Templates') {
-            matrix {
-              agent any
-              axes {
-                axis {
-                  name 'SERVICE_TEMPLATE'
-                  values 'JMeterMasterOnly', 'DeploymentTestAgent'
-                }
+        }
+        stage('Obtain TI Service Templates') {
+          matrix {
+            agent any
+            axes {
+              axis {
+                name 'SERVICE_TEMPLATE'
+                values 'JMeterMasterOnly', 'DeploymentTestAgent'
               }
-              stages {
-                stage('Query Service Template') {
-                  environment {
-                    CSAR = "TI_${SERVICE_TEMPLATE}"
-                  }
-                  steps {
-                    sh "curl -H 'Accept: application/xml' -o ${CSAR} ${PARTICLES_EXPORT_URL}/radon.blueprints.testing/${SERVICE_TEMPLATE}/?yaml&csar"
-                    stash name: "${SERVICE_TEMPLATE}", includes: "${CSAR}"
-                  }
+            }
+            stages {
+              stage('Query Service Template') {
+                environment {
+                  CSAR = "TI_${SERVICE_TEMPLATE}"
+                }
+                steps {
+                  sh "curl -H 'Accept: application/xml' -o ${CSAR} ${PARTICLES_EXPORT_URL}/radon.blueprints.testing/${SERVICE_TEMPLATE}/?yaml&csar"
+                  stash name: "${SERVICE_TEMPLATE}", includes: "${CSAR}"
                 }
               }
             }
-          }  
-        }
+          }
+        }  
       }
     }
     stage('Stop GMT and Clean up') {
