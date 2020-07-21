@@ -7,6 +7,7 @@ Integration and regression test setup for [RADON CTT](https://github.com/radon-h
 This setup integrates the following tools:
 * arbitrary service templates from [RADON Particles](https://github.com/radon-h2020/radon-particles) (currently SockShop)
 * [RADON GMT](https://github.com/radon-h2020/radon-gmt)
+* [RADON CTT](https://github.com/radon-h2020/radon-ctt)
 * [Opera](https://github.com/radon-h2020/xopera-opera)
 
 ## Major Integration Steps 
@@ -14,6 +15,6 @@ This setup integrates the following tools:
 * Spin up [RADON GMT](https://github.com/radon-h2020/radon-gmt)
 * Export specified CSAR using REST interface of RADON GMT
 * Extract CSAR and identify entry definition
-* Deploy said service templat with [Opera](https://github.com/radon-h2020/xopera-opera)
+* Execute the CTT workflow including the deployment of the SUT and TI using [Opera](https://github.com/radon-h2020/xopera-opera)
 * Try to probe deployed service using `curl`
 
