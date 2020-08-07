@@ -101,8 +101,8 @@ script:
   # Start CTT server
   - mkdir ${CTT_VOLUME}
   - docker run --name "${CTT_DOCKER_NAME}" -d -p "127.0.0.1:${CTT_EXT_PORT}:${CTT_PORT}" -e "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" -e "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" -e "CTT_FAAS_ENABLED=${CTT_FAAS_ENABLED}" -e "CSAR_URL=${CTT_ENV_CSAR_URL}" -v /var/run/docker.sock:/var/run/docker.sock -v "${CTT_VOLUME}:/tmp/RadonCTT" "${CTT_SERVER_DOCKER}:${CTT_SERVER_DOCKER_TAG}"
-  - docker images
-  - docker ps
+  # Give RadonCTT time to start
+  - sleep 30
   # CTT: Create Project
   - "export CTT_PROJECT_UUID=$(./curl_uuid.sh \"${CTT_ENDPOINT}/project\" \"{\\\"name\\\":\\\"${PROJECT}\\\",\\\"repository_url\\\":\\\"${CTT_PROJECT_GIT_REPO}\\\"}\")"
   # CTT: Create Test-Artifact
