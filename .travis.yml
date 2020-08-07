@@ -101,6 +101,8 @@ script:
   # Start CTT server
   - mkdir ${CTT_VOLUME}
   - docker run --name "${CTT_DOCKER_NAME}" -d -p "127.0.0.1:${CTT_EXT_PORT}:${CTT_PORT}" -e "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" -e "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" -e "CTT_FAAS_ENABLED=${CTT_FAAS_ENABLED}" -e "CSAR_URL=${CTT_ENV_CSAR_URL}" -v /var/run/docker.sock:/var/run/docker.sock -v "${CTT_VOLUME}:/tmp/RadonCTT" "${CTT_SERVER_DOCKER}:${CTT_SERVER_DOCKER_TAG}"
+  - docker images
+  - docker ps
   # CTT: Create Project
   - "export CTT_PROJECT_UUID=$(./curl_uuid.sh \"${CTT_ENDPOINT}/project\" \"{\\\"name\\\":\\\"${PROJECT}\\\",\\\"repository_url\\\":\\\"${CTT_PROJECT_GIT_REPO}\\\"}\")"
   # CTT: Create Test-Artifact
@@ -108,7 +110,7 @@ script:
   # CTT: Create Deployment
   - "export CTT_DEPLOYMENT_UUID=$(./curl_uuid.sh  \"${CTT_ENDPOINT}/deployment\" \"{\\\"testartifact_uuid\\\":\\\"${CTT_TESTARTIFACT_UUID}\\\"}\" \"${CTT_UUID_FILTER_STRING_DEFAULT}\")"
   # Give deployments some time to succeed.
-  - sleep 120
+  - sleep 120 
   - "echo \"DEPLOYMENT_UUID: ${CTT_DEPLOYMENT_UUID}\""
   # Check SUT Deployment
   - "export SUT_DEPLOYMENT_HTTP=$(curl -o /dev/null -s -w \"%{http_code}\\n\" \"${SUT_DEPLOYMENT_URL}\")"
