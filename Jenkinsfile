@@ -46,7 +46,7 @@ pipeline {
 	      axes {
 	        axis {
 	          name 'SERVICE_TEMPLATE'
-           values 'SockShopTestingExample', 'ThumbnailGeneration'
+           values 'SockShopTestingExample', 'ThumbnailGeneration', 'ServerlessToDoListAPI'
 	        }
 	      }
       	stages {
@@ -69,7 +69,7 @@ pipeline {
         axes {
           axis {
             name 'SERVICE_TEMPLATE'
-            values 'JMeterMasterOnly', 'DeploymentTestAgent'
+            values 'JMeterMasterOnlyEC2', 'DeploymentTestAgentEC2'
           }
         }
         stages {
