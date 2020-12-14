@@ -32,7 +32,8 @@ pipeline {
       agent any
       steps {
         sh "docker-compose pull"
-        sh "git clone --single-branch --branch ${PARTICLES_BRANCH} ${PARTICLES_URL} $PARTICLES_DIR}"
+        sh "rm -rf ${PARTICLES_DIR}"
+        sh "git clone --single-branch --branch ${PARTICLES_BRANCH} ${PARTICLES_URL} ${PARTICLES_DIR}"
         sh "chmod -R a+rwx ${PARTICLES_DIR}"
         sh "docker-compose up -d"
         sh "sleep 30"
