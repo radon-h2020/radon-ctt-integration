@@ -13,13 +13,15 @@ env:
     - CTT_ENV_CSAR_URL="1"
     - CTT_PORT="18080"
     - CTT_EXT_PORT="7999"
-    - CTT_ENDPOINT="http://localhost:${CTT_EXT_PORT}/RadonCTT"
+    - CTT_ENDPOINT="http://127.0.0.1:${CTT_EXT_PORT}/RadonCTT"
     - CTT_RESULT_FILE="/tmp/result.zip"
+    - CTT_UUID_FILTER_STRING_DEFAULT=".uuid"
+    - CTT_UUID_FILTER_STRING_TA=".[].uuid"
     - CSAR_ARTIFACT_BASE_URL="http://217.172.12.165:8080/job/GMT/job/radon-particles-csar-export/job/master/lastSuccessfulBuild/artifact"
     - SUT_DEPLOYMENT_PORT="80"
-    - SUT_DEPLOYMENT_URL="http://localhost:${SUT_DEPLOYMENT_PORT}"
+    - SUT_DEPLOYMENT_URL="http://127.0.0.1:${SUT_DEPLOYMENT_PORT}"
     - TI_DEPLOYMENT_PORT="5000"
-    - TI_DEPLOYMENT_URL="http://localhost:${TI_DEPLOYMENT_PORT}"
+    - TI_DEPLOYMENT_URL="http://127.0.0.1:${TI_DEPLOYMENT_PORT}"
 
 jobs: 
   include:
@@ -101,21 +103,26 @@ script:
   # Start CTT server
   - mkdir ${CTT_VOLUME}
   - docker run --name "${CTT_DOCKER_NAME}" -d -p "127.0.0.1:${CTT_EXT_PORT}:${CTT_PORT}" -e "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" -e "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" -e "CTT_FAAS_ENABLED=${CTT_FAAS_ENABLED}" -e "CSAR_URL=${CTT_ENV_CSAR_URL}" -v /var/run/docker.sock:/var/run/docker.sock -v "${CTT_VOLUME}:/tmp/RadonCTT" "${CTT_SERVER_DOCKER}:${CTT_SERVER_DOCKER_TAG}"
+  # Give RadonCTT time to start
+  - sleep 30
   # CTT: Create Project
-  - "export CTT_PROJECT_UUID=$(./curl_uuid.sh \"${CTT_ENDPOINT}/project\" \"{\\\"name\\\":\\\"${PROJECT}\\\",\\\"repository_url\\\":\\\"${CTT_PROJECT_GIT_REPO}\\\"}\")"
+  - "export CTT_PROJECT_UUID=$(./curl_uuid.sh \"${CTT_ENDPOINT}/project\" \"{\\\"name\\\":\\\"${PROJECT}\\\",\\\"repository_url\\\":\\\"${CTT_PROJECT_GIT_REPO}\\\"}\" \"${CTT_UUID_FILTER_STRING_DEFAULT}\")"
+  - "echo \"Project UUID: ${CTT_PROJECT_UUID}\""
   # CTT: Create Test-Artifact
-  - "export CTT_TESTARTIFACT_UUID=$(./curl_uuid.sh \"${CTT_ENDPOINT}/testartifact\" \"{\\\"project_uuid\\\":\\\"${CTT_PROJECT_UUID}\\\",\\\"sut_tosca_path\\\":\\\"${CSAR_ARTIFACT_BASE_URL}/${PROJECT}.csar\\\",\\\"ti_tosca_path\\\":\\\"${CSAR_ARTIFACT_BASE_URL}/${TI_FILE}\\\"}\")"
+  - "export CTT_TESTARTIFACT_UUID=$(./curl_uuid.sh \"${CTT_ENDPOINT}/testartifact\" \"{\\\"project_uuid\\\":\\\"${CTT_PROJECT_UUID}\\\",\\\"sut_tosca_path\\\":\\\"${CSAR_ARTIFACT_BASE_URL}/${PROJECT}.csar\\\",\\\"ti_tosca_path\\\":\\\"${CSAR_ARTIFACT_BASE_URL}/${TI_FILE}\\\"}\" \"${CTT_UUID_FILTER_STRING_TA}\")"
+  - "echo \"TestArtifact UUID: ${CTT_TESTARTIFACT_UUID}\""
   # CTT: Create Deployment
   - "export CTT_DEPLOYMENT_UUID=$(./curl_uuid.sh  \"${CTT_ENDPOINT}/deployment\" \"{\\\"testartifact_uuid\\\":\\\"${CTT_TESTARTIFACT_UUID}\\\"}\" \"${CTT_UUID_FILTER_STRING_DEFAULT}\")"
+  - "echo \"Deployment UUID: ${CTT_DEPLOYMENT_UUID}\""
   # Give deployments some time to succeed.
-  - sleep 120
-  - "echo \"DEPLOYMENT_UUID: ${CTT_DEPLOYMENT_UUID}\""
+  - sleep 120 
   # Check SUT Deployment
   - "export SUT_DEPLOYMENT_HTTP=$(curl -o /dev/null -s -w \"%{http_code}\\n\" \"${SUT_DEPLOYMENT_URL}\")"
   - "export TI_DEPLOYMENT_HTTP=$(curl -o /dev/null -s -w \"%{http_code}\\n\" \"${TI_DEPLOYMENT_URL}\")"
   - "echo HTTP Codes: SUT ${SUT_DEPLOYMENT_HTTP}, TI ${TI_DEPLOYMENT_HTTP}"
   # CTT: Trigger Execution
   - "export CTT_EXECUTION_UUID=$(./curl_uuid.sh \"${CTT_ENDPOINT}/execution\" \"{\\\"deployment_uuid\\\":\\\"${CTT_DEPLOYMENT_UUID}\\\"}\" \"${CTT_UUID_FILTER_STRING_DEFAULT}\")"
+  - "echo \"Execution UUID: ${CTT_EXECUTION_UUID}\""
   - sleep 30
   # CTT: Create Result
   - "export CTT_RESULT_UUID=$(./curl_uuid.sh \"${CTT_ENDPOINT}/result\" \"{\\\"execution_uuid\\\":\\\"${CTT_EXECUTION_UUID}\\\"}\" \"${CTT_UUID_FILTER_STRING_DEFAULT}\")"
