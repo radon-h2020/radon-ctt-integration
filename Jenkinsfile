@@ -89,7 +89,7 @@ pipeline {
     stage('Stop GMT and Clean up') {
       agent any
       steps {
-        sh "docker-compose -fsv"
+        sh "docker-compose rm -fsv"
         sh "rm -rf ${PARTICLES_DIR}"
       }
     }
