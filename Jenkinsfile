@@ -17,7 +17,7 @@ pipeline {
     PARTICLES_URL = "https://github.com/radon-h2020/radon-particles.git"
     PARTICLES_BRANCH = "master"
     PARTICLES_DIR = "radon-particles"
-    PARTICLES_EXPORT_URL = "http://127.0.0.1:${GMT_HTTP_PORT}/winery/servicetemplates/"
+    PARTICLES_EXPORT_URL = "http://127.0.0.1:${GMT_HTTP_PORT}/winery/servicetemplates"
 
     CTT_DOCKER_NAME = "RadonCTT"
     CTT_DOCKER_ORG = "radonconsortium"
@@ -55,7 +55,7 @@ pipeline {
 	            CSAR = "SUT_${SERVICE_TEMPLATE}.csar"
 	          }
 	          steps {
-	            sh "curl -H 'Accept: application/xml' -o ${CSAR} ${PARTICLES_EXPORT_URL}/radon.blueprints/${SERVICE_TEMPLATE}/?yaml&csar"
+	            sh "curl -H 'Accept: application/xml' -o \"${CSAR}\" \"${PARTICLES_EXPORT_URL}/radon.blueprints/${SERVICE_TEMPLATE}/?yaml&csar\""
 	            stash name: "${SERVICE_TEMPLATE}", includes: "${CSAR}"
 	          }
 	        }
@@ -78,7 +78,7 @@ pipeline {
               CSAR = "TI_${SERVICE_TEMPLATE}"
             }
             steps {
-              sh "curl -H 'Accept: application/xml' -o ${CSAR} ${PARTICLES_EXPORT_URL}/radon.blueprints.testing/${SERVICE_TEMPLATE}/?yaml&csar"
+              sh "curl -H 'Accept: application/xml' -o \"${CSAR}\" \"${PARTICLES_EXPORT_URL}/radon.blueprints.testing/${SERVICE_TEMPLATE}/?yaml&csar\""
               stash name: "${SERVICE_TEMPLATE}", includes: "${CSAR}"
             }
           }  
